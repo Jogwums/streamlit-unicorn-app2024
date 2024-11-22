@@ -24,34 +24,29 @@ df = load_data()
 st.title("Unicorn Companies App")
 
 # create filters
-#  add a side bar and uniue values from our columns 
-# industry filter
-industry_list = df["Industry"].unique()
-selected_industry = st.sidebar.multiselect("Industry", industry_list)
-# filtered_industry = df[df["Industry"].isin(selected_industry)]
-
-# country filter 
-country_list = df['Country/Region'].unique()
-selected_country = st.sidebar.multiselect("Country", country_list)
-# filtered_country = df[df['Country/Region'].isin(selected_country)]
-
-
-# filter the data if an industry is selected / if none
-if selected_industry and selected_country:
-    combined_table = df[df["Industry"].isin(selected_industry) & df['Country/Region'].isin(selected_country)]
-   
-elif selected_industry:
-    combined_table = df[df["Industry"].isin(selected_industry)]
-    
-elif selected_country:
-    combined_table = df[df['Country/Region'].isin(selected_country)]
-  
-else:
-    combined_table = df
-   
+# dynamic filter for multiple fields 
+filters = {
+    "Industry": df["Industry"].unique(),
+    "Country/Region": df["Country/Region"].unique(),
+    "Year Founded": df["Year Founded"].unique(),
+    "City": df["City"].unique(),
+    "Year Joined": df["Year Joined"].unique()
+}
+# Store user selections
+selected_filters = {}
+# Generate multiselect widgets dynamically
+for key, options in filters.items():
+    selected_filters[key] = st.sidebar.multiselect(key, options)
+# Filter the data dynamically
+filtered_data = df  # Start with the full dataset
+for key, selected_values in selected_filters.items():
+    if selected_values:  # Apply filter only if a selection is made
+        filtered_data = filtered_data[filtered_data[key].isin(selected_values)]
+# Display the filtered data
+st.dataframe(filtered_data)
 
 # display the table
-st.dataframe(combined_table)
+# st.dataframe(combined_table)
 # calculate some metrics
 no_of_companies = len(df)
 total_valuation = f"$ {round(df["Valuation ($)"].sum() / 1000000000, 2)} B"
