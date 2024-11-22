@@ -50,7 +50,7 @@ st.dataframe(filtered_data)
 # calculate some metrics
 no_of_companies = len(filtered_data)
 total_valuation = f"$ {round(filtered_data["Valuation ($)"].sum() / 1000000000, 2)} B"
-total_funding = filtered_data["Funding ($)"].sum()
+total_funding = f"$ {round(filtered_data["Funding ($)"].sum() / 1000000000, 2)} B"
 
 
 # display these metrics 
@@ -74,19 +74,19 @@ con = st.container()
 with con:
     # matplotlib / seaborn
     st.subheader("Charts section")
-    bar_plot_1 = sns.countplot(data=df, x=df['Industry'])
+    bar_plot_1 = sns.countplot(data=filtered_data, x=filtered_data['Industry'])
     plt.xticks(rotation=45)
     plt.ylabel("No of companies")
     st.pyplot(bar_plot_1.get_figure())
 
     # plotly charts (pip install plotly: in the cmd)
     # line chart 
-    line_1 = px.bar(df, x="Industry", y="Count")
+    line_1 = px.bar(filtered_data, x="Industry", y="Count")
     st.plotly_chart(line_1)
 
 
 # investors table 
-investors_list = df["Select Investors"].str.split(",").explode().str.strip()
+investors_list = filtered_data["Select Investors"].str.split(",").explode().str.strip()
 investors_df = investors_list.value_counts().reset_index()
 investors_df.columns = ['Investor', 'Company Counts']
 
