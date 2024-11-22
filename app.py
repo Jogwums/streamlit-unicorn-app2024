@@ -6,13 +6,13 @@ import seaborn as sns
 import plotly.figure_factory as ff 
 import plotly.express as px 
 
-
+@st.cache_data
 def load_data():
     df = pd.read_csv("./Unicorn_Companies.csv")
     df.loc[:,"Valuation ($)"] = df.loc[:,"Valuation"].str.replace("$","").str.replace("B","000000000").astype("int64")
     df.loc[:,"Funding ($)"] = df.loc[:,"Funding"].str.replace("Unknown","-1").str.replace("$","").str.replace("M","000000").str.replace("B","000000000").astype("int64")
     df.drop(columns=["Valuation","Funding"], axis=1, inplace=True)
-    df['Date Joined'] = pd.to_datetime(df['Date Joined'])
+    df['Date Joined'] = pd.to_datetime(df['Date Joined'], format="mixed")
     df.loc[:,"Year Joined"] = df["Date Joined"].dt.year
     df.loc[:, "Years to unicorn status"] = df["Year Joined"] - df["Year Founded"]
     df.loc[:,"Count"] = 1
@@ -48,9 +48,9 @@ st.dataframe(filtered_data)
 # display the table
 # st.dataframe(combined_table)
 # calculate some metrics
-no_of_companies = len(df)
-total_valuation = f"$ {round(df["Valuation ($)"].sum() / 1000000000, 2)} B"
-total_funding = df["Funding ($)"].sum()
+no_of_companies = len(filtered_data)
+total_valuation = f"$ {round(filtered_data["Valuation ($)"].sum() / 1000000000, 2)} B"
+total_funding = filtered_data["Funding ($)"].sum()
 
 
 # display these metrics 
